@@ -123,6 +123,6 @@ if choice == "yes":
         i += 1
         
         
-print("===Thank You for using the Personal Budget aving tool")        
+print("===Thank You for using the Personal Budget saving tool")        
      
              
