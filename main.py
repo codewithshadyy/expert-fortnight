@@ -13,104 +13,135 @@
 print(" ====Monthly Budget==== ")
 
 
-def get_valid_number(prompt):
-    
- 
+class InvalidInputError(Exception):
+    "custom exceptio for invalid input"
 
-    while True:
+
+
+class BudegtCalculator:
     
-            value = input(prompt)
+    def __init__(self):
+        self.name = ""
+        self.income = 0.0
+        self.expenses = {}
+
+
+    def get_valid_number(self, prompt):
+        
+    
+
+        while True:
             
-            if value.replace(".", "", 1).isdigit():
-                return float(value)
-            
-            else:
-                print("enter a monthly income") 
- 
+            try:
+        
+                    value = input(prompt)
+                    
+                    if value.replace(".", "", 1).isdigit():
+                        return float(value)
+                    
+                    else:
+                         
+                        raise InvalidInputError("enter a monthly income")
+            except   InvalidInputError as e:
+                print(e)         
+    
     
 
-# step 1
-def get_user_details():
-    name = input("enter your name:")
-    income = get_valid_number("Enter your monthly income:$")
-    return name,income
+    # step 1
+    def get_user_details(self):
+        self.name = input("enter your name:")
+        self.income = self.get_valid_number("Enter your monthly income:$")
+       
 
 
 
-def get_expenses():
-    expense_categories = ["Rent", "Groceries", "Transport", "Entertainment"]
-    expenses = {}
-    
-    for category in expense_categories:
-        expenses[category] = get_valid_number(f"Enter Your {category} expense:$")
-    return expenses    
-    
+    def get_expenses(self):
+        expense_categories = ["Rent", "Groceries", "Transport", "Entertainment"]
+        print("\n------print your expenses----")
+        
+        
+        for category in expense_categories:
+            try:
+                self.expenses[category] = self.get_valid_number(f"{category} expense:$")
+                
+            except Exception:
+                print("error entering expenses.please try again")    
+        
+                
+        
 
 
-def calculate_budget(income, expenses):
-    total_expenses = sum(expenses.values())
-    remaining_balance = income - total_expenses
-    savings_ratio  =  (remaining_balance / income) * 100
-    
-    return total_expenses, remaining_balance, savings_ratio
+    def calculate_budget(self):
+        total_expenses = sum(self.expenses.values())
+        remaining_balance = self.income - total_expenses
+        
+        try:
+           savings_ratio  =  (remaining_balance / self.income) * 100 if self.income > 0 else 0
+        except ZeroDivisionError:
+            savings_ratio = 0     
+        
+        return total_expenses, remaining_balance, savings_ratio
     
     
         
 
-def display_summary(name, income,total_expenses,remaining_balance, savings_ratio):  
-    
-        print("==== Monthly budget Summary==== ")
-        print(f"Monthly budget summmary for {name}")
-        print(f"monthly income:${income:.2f}")
+    def display_summary(self,total_expenses,remaining_balance, savings_ratio):  
+        
+            print("==== Monthly budget Summary==== ")
+            print(f"Monthly budget summmary for {self.name}")
+            print(f"monthly income:${self.income:.2f}")
 
-        print(f"Total  expenses:${total_expenses:.2f}")
-        print(f"Remaining balance:${remaining_balance:.2f}")
-        print(f"Savings Ratio:{savings_ratio:.2f}%")
+            print(f"Total  expenses:${total_expenses:.2f}")
+            print(f"Remaining balance:${remaining_balance:.2f}")
+            print(f"Savings Ratio:{savings_ratio:.2f}%")
 
-        # step 5
+            # step 5
 
-        print("==============================")
+            print("==============================")
 
-        if savings_ratio < 10:
-            print("YOur savings are low, try reducing expenses")
-        elif savings_ratio < 30:
-            print("You are saving fairly, keep improving")
-        else:
-            print("great job!!, you are saving nicely")  
+            if savings_ratio < 10:
+                print("YOur savings are low, try reducing expenses")
+            elif savings_ratio < 30:
+                print("You are saving fairly, keep improving")
+            else:
+                print("great job!!, you are saving nicely")  
             
             
             
-def show_expense_breakdown(expenses):
-    choice =  input("\nWould you like to see breakdown of your expenses?(yes/no):").strip().lower()
+    def show_expense_breakdown(self):
+        choice =  input("\nWould you like to see breakdown of your expenses?(yes/no):").strip().lower()
 
-    if choice == "yes":
-       
-       
-        total = sum(expenses.values())
-    
-        print("\nExpense breakdown")
-        for category, amount in expenses.items():
-            percent = (amount / total) * 100
-            print(f"{category}:{amount:.2f} ({percent:.2f})")
+        if choice == "yes":
+        
+        
+            total = sum(self.expenses.values())
+        
+            print("\nExpense breakdown")
+            for category, amount in self.expenses.items():
+                percent = (amount / total) * 100
+                print(f"{category}:{amount:.2f} ({percent:.2f})")
             
             
     
  
  
 def main():
-    name, income = get_user_details()
-    expenses = get_expenses()
+    
+    calculator = BudegtCalculator()
+    calculator.get_user_details()
+    calculator.get_expenses()
 
-    total_expenses, remaining_balance, savings_ratio = calculate_budget(income, expenses)
+    total_expenses, remaining_balance, savings_ratio = calculator.calculate_budget()
 
-    display_summary(name, income, total_expenses, remaining_balance, savings_ratio)
-    show_expense_breakdown(expenses)
+    calculator.display_summary(total_expenses, remaining_balance, savings_ratio)
+    calculator.show_expense_breakdown()
 
     print("=== Thank You for using the Personal Budget Saving Tool ===")
 
     
-    
-main()    
+if __name__ == "__main__":  
+    main()   
+   
     
     
        
