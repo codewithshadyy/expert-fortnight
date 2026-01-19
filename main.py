@@ -1,5 +1,5 @@
 
-
+import json
 """ 
 
 
@@ -24,7 +24,47 @@ class BudegtCalculator:
         self.name = ""
         self.income = 0.0
         self.expenses = {}
+        
+    @staticmethod        
+    def validate_number(value):
+      try:
+        return float
+    
+      except ValueError:
+        InvalidInputError("Enter a valid number")
+        
+        
+        
+    def to_json(self):
+        json.dumps({
+            "name":self.name,
+            "income":self.income,
+            "expenses":self.expenses
+        })
+    
+    @classmethod
+    def from_json(cls, json_string):
+        data = json.loads(json_string)
+        obj = cls
+        obj.name = data["name"]
+        obj.income = data["income"]
+        obj.expenses = data["expenses"]  
+        return obj  
 
+
+    @classmethod 
+    def save_to_json(self, filename="budget_saving.json"):
+       with open(filename, "w") as file:
+           file.write(self.to_json())
+           
+           
+    def load_from_json(cls, filename="budget_saving.json"):
+        with open(filename, "r") as file:
+            json_data = file.read()
+        
+        return cls.from_json(json_data)           
+        
+            
 
     def get_valid_number(self, prompt):
         
@@ -35,13 +75,7 @@ class BudegtCalculator:
             try:
         
                     value = input(prompt)
-                    
-                    if value.replace(".", "", 1).isdigit():
-                        return float(value)
-                    
-                    else:
-                         
-                        raise InvalidInputError("enter a monthly income")
+                    return BudegtCalculator.validate_number()
             except   InvalidInputError as e:
                 print(e)         
     
@@ -135,6 +169,23 @@ def main():
 
     calculator.display_summary(total_expenses, remaining_balance, savings_ratio)
     calculator.show_expense_breakdown()
+    
+    
+    # print("\n------serialized data----")
+    # json_data = calculator.to_json()
+    # print(json_data)
+    
+    # print("\n----deserialized Json data")
+    # new_calculator = calculator.from_json(to_json)
+    # print(f"Deserialized data for:{new_calculator.name}")
+    
+    print("\nsaving budget in file.....")
+    calculator.save_to_json()
+    
+    print("\n loaded data from file")
+    loaded_calc = calculator.load_from_json()
+    print(f"loaded data for:{loaded_calc.name}")
+    
 
     print("=== Thank You for using the Personal Budget Saving Tool ===")
 
